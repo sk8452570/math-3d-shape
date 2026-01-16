@@ -1,43 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Math 2D & 3D Shape Visualizer</title>
+<meta charset="UTF-8">
+<title>Realistic Math Shape Visualizer</title>
 
-  <!-- Libraries -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+header {
+  background: #020617;
+  padding: 15px;
+  text-align: center;
+}
+input, button, select {
+  padding: 8px;
+  font-size: 15px;
+  margin: 5px;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background: #1d4ed8;
+}
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#graph {
+  width: 90%;
+  height: 70vh;
+  margin-top: 10px;
+}
+#historySelect {
+  width: 300px;
+  padding: 5px;
+  font-size: 14px;
+  margin-top: 5px;
+  background: #1e293b;
+  color: white;
+  border: none;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Math Shape Visualizer (2D + 3D)</h2>
+<header>
+  <h2>Realistic Mathematical Shape Visualizer</h2>
+  <input id="eq" size="34" value="x*x + y*y + z*z - 25">
+  <select id="mode">
+    <option value="3d">3D</option>
+    <option value="2d">2D</option>
+  </select>
+  <button onclick="draw()">Draw</button>
+  <button onclick="exportImage()">Export Image</button>
+  <p id="shape">Detected Shape: —</p>
+  <div>
+    <label for="historySelect">History:</label>
+    <select id="historySelect" onchange="useHistory()">
+      <option value="">--Select previous equation--</option>
+    </select>
+  </div>
+</header>
 
-<p>Equation likho (Example: <b>x^2 + y^2 = 25</b> ya <b>x^2 + y^2 + z^2 = 25</b>)</p>
+<div id="container">
+  <div id="graph"></div>
+</div>
 
-<input id="equation" value="x^2 + y^2 + z^2 = 25">
+<script>
+let history = [];
 
-<br><br>
+function detectShape(eq, mode) {
+  if (mode === "3d") {
+    if (eq.includes("x*x") && eq.includes("y*y") && eq.includes("z*z"))
+      return "Sphere / Ellipsoid";
+    if (eq.includes("x*x") && eq.includes("y*y") && eq.includes("- z"))
+      return "Paraboloid";
+    if (eq.includes("x*x") && eq.includes("y*y"))
+      return "Cylinder";
+  } else {
+    if (eq.includes("x*x") && eq.includes("y*y"))
+      return "Circle / Ellipse";
+    if (eq.includes("x*x") && eq.includes("- y"))
+      return "Parabola";
+  }
+  return "Unknown Shape";
+}
 
-<select id="mode">
-  <option value="2d">2D Shape</option>
-  <option value="3d">3D Shape</option>
-</select>
+function draw() {
+  let eq = document.getElementById("eq").value;
+  let mode = document.getElementById("mode").value;
 
-<br><br>
+  document.getElementById("shape").innerText =
+    "Detected Shape: " + detectShape(eq, mode);
 
-<button onclick="draw()">Draw Shape</button>
-<button onclick="exportPNG()">Export Image</button>
+  if (!history.includes(eq)) {
+    history.push(eq);
+    updateHistory();
+  }
 
-<p id="shape"></p>
+  if (mode === "3d") draw3D(eq);
+  else draw2D(eq);
+}
 
-<h3>History</h3>
-<ul id="history"></ul>
+function draw3D(eq) {
+  let xs = [], ys = [], zs = [], values = [];
 
-<div id="graph"></div>
+  for (let x = -6; x <= 6; x += 0.4) {
+    for (let y = -6; y <= 6; y += 0.4) {
+      for (let z = -6; z <= 6; z += 0.4) {
 
-<script src="script.js"></script>
+        let e = eq
+          .replaceAll("x", `(${x})`)
+          .replaceAll("y", `(${y})`)
+          .replaceAll("z", `(${z})`);
+
+        try {
+          let v = eval(e);
+          xs.push(x);
+          ys.push(y);
+          zs.push(z);
+          values.push(v);
+        } catch {}
+      }
+    }
+  }
+
+  Plotly.newPlot("graph", [{
+    type: "isosurface",
+    x: xs,
+    y: ys,
+    z: zs,
+    value: values,
+    isomin: -0.4,
+    isomax: 0.4,
+    surface: { count: 1 },
+    colorscale: "Viridis",
+    caps: { x: false, y: false, z: false }
+  }], {
+    paper_bgcolor: "#0f172a",
+    scene: {
+      xaxis: { color: "white" },
+      yaxis: { color: "white" },
+      zaxis: { color: "white" }
+    }
+  });
+}
+
+function draw2D(eq) {
+  let x=[], y=[];
+  for (let i=0;i<3000;i++) {
+    let a=(Math.random()-0.5)*10;
+    let b=(Math.random()-0.5)*10;
+
+    let e = eq.replaceAll("x",`(${a})`)
+              .replaceAll("y",`(${b})`);
+    try {
+      if (Math.abs(eval(e))<0.3) {
+        x.push(a); y.push(b);
+      }
+    } catch {}
+  }
+
+  Plotly.newPlot("graph",[{
+    x,y,
+    mode:"markers",
+    type:"scatter"
+  }],{
+    paper_bgcolor:"#0f172a",
+    xaxis:{color:"white"},
+    yaxis:{color:"white"}
+  });
+}
+
+function updateHistory() {
+  let select = document.getElementById("historySelect");
+  select.innerHTML = '<option value="">--Select previous equation--</option>';
+  history.forEach(eq => {
+    let option = document.createElement("option");
+    option.value = eq;
+    option.text = eq;
+    select.appendChild(option);
+  });
+}
+
+function useHistory() {
+  let val = document.getElementById("historySelect").value;
+  if(val !== "") {
+    document.getElementById("eq").value = val;
+    draw();
+  }
+}
+
+function exportImage() {
+  Plotly.downloadImage("graph",{format:"png",filename:"math-shape"});
+}
+</script>
+
 </body>
 </html>
