@@ -2,118 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Er Sandip's 3D Math Visualizer</title>
+<title>Er Sandip | Math Shape Visualizer</title>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <style>
-body {
-  margin: 0;
-  font-family: 'Poppins', Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#000;
+  color:white;
 }
-header {
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
-  padding: 30px;
-  text-align: center;
-  border-bottom: 3px solid #1e40af;
+header{
+  text-align:center;
+  padding:20px;
+  background:#020617;
 }
-header img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid white;
-  margin-bottom: 10px;
+header img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:2px solid white;
 }
-header h1 {
-  font-size: 36px;
-  margin-bottom: 5px;
-}
-header p {
-  font-size: 18px;
-  color: #cbd5e1;
-  margin-top:0;
-  margin-bottom:15px;
-}
-input, button, select {
-  width: 90%;
-  max-width: 350px;
-  padding: 8px;
-  font-size: 15px;
-  margin: 5px auto;
-  display: block;
-}
-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-button:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
-#container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#graph {
-  width: 95%;
-  max-width: 1200px;
-  height: 60vh;
-  margin-top: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  background: #0f172a;
-}
-#historySelect {
-  width: 90%;
-  max-width: 300px;
-  padding: 5px;
-  font-size: 14px;
-  margin-top: 5px;
-  background: #1e293b;
-  color: white;
-  border: none;
-  display: block;
-  margin-left:auto;
-  margin-right:auto;
-}
-section.about {
+input,select{
   width:90%;
+  max-width:360px;
+  padding:8px;
+  margin:6px auto;
+  display:block;
+}
+button{
+  padding:6px 12px;
+  font-size:13px;
+  border:none;
+  border-radius:6px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  margin:4px;
+}
+#graph{
+  width:98%;
+  height:90vh;
   margin:20px auto;
+  background:white;
+  border-radius:12px;
+  transition:all 0.3s ease;
+}
+#graph.fullscreen{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:9999;
+  border-radius:0;
+}
+#controls3d{
   text-align:center;
+  margin-top:8px;
 }
-section.about h2 {
-  font-size:28px;
-  margin-bottom:10px;
-}
-section.about p {
-  font-size:16px;
-  color:#cbd5e1;
-  line-height:1.5;
-}
-footer {
+footer{
   text-align:center;
-  padding:15px;
-  margin-top:20px;
+  padding:10px;
   background:#020617;
   color:#94a3b8;
 }
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  header h1 { font-size: 28px; }
-  header p { font-size: 14px; }
-  input, button, select { font-size: 14px; padding: 6px; }
-  #graph { height: 50vh; }
-  section.about h2 { font-size: 22px; }
-  section.about p { font-size: 14px; }
-  header img { width: 80px; height: 80px; }
+@media(max-width:768px){
+  #graph{height:75vh;}
 }
 </style>
 </head>
@@ -121,145 +76,223 @@ footer {
 <body>
 
 <header>
-  <img src="me.png" alt="Er Sandip Logo" onerror="this.style.display='none'">
-  <h1>Er Sandip's 3D Math Visualizer</h1>
-  <p>Create 2D & 3D shapes from equations instantly</p>
-  <input id="eq" size="34" value="x*x + y*y + z*z - 25">
-  <select id="mode">
-    <option value="3d">3D</option>
-    <option value="2d">2D</option>
+  <img src="me.png">
+  <h1>Er Sandip's Math Shape Visualizer</h1>
+  <p>2D Front Geometry (Clear Shape) & 3D Surfaces</p>
+
+  <!-- GEOMETRY DROPDOWN -->
+  <select id="preset" onchange="applyPreset()">
+    <option value="">-- 2D Geometry Shapes --</option>
+    <option value="x - y">Straight Line</option>
+    <option value="x*x + y*y - 25">Circle</option>
+    <option value="x*x/9 + y*y/4 - 1">Ellipse</option>
+    <option value="x*x - y">Parabola</option>
+    <option value="y*y - 4*x">Sideways Parabola</option>
+    <option value="x*x - y*y - 1">Hyperbola</option>
+    <option value="Math.abs(x)+Math.abs(y)-5">Rhombus (Diamond)</option>
+    <option value="Math.max(Math.abs(x),Math.abs(y))-4">Square</option>
+    <option value="Math.sin(x)-y">Sine Curve</option>
+    <option value="Math.cos(x)-y">Cosine Curve</option>
+    <option value="Math.tan(x)-y">Tangent Curve</option>
+    <option value="x*x*x - y">Cubic Curve</option>
+    <option value="Math.exp(x)-y">Exponential Curve</option>
+    <option value="Math.log(Math.abs(x)+1)-y">Logarithmic Curve</option>
+    <option value="">-- Special Curve --</option>
+    <option value="butterfly">Butterfly Curve</option>
+    <option value="">-- 3D Geometry Surfaces --</option>
+    <option value="x*x + y*y + z*z - 25">Sphere</option>
+    <option value="x*x + y*y - z">Paraboloid</option>
+    <option value="z - x*x - y*y">Elliptic Paraboloid</option>
+    <option value="x*x + y*y - 9">Cylinder</option>
+    <option value="z*z - x*x - y*y">Cone</option>
+    <option value="x*x + y*y - z*z - 1">Hyperboloid (One Sheet)</option>
+    <option value="x*x + y*y - z*z + 1">Hyperboloid (Two Sheet)</option>
   </select>
+
+  <!-- MULTIPLE EQUATIONS -->
+  <input id="eq1" placeholder="Equation 1">
+  <input id="eq2" placeholder="Equation 2 (optional)">
+  <input id="eq3" placeholder="Equation 3 (optional)">
+
+  <select id="mode">
+    <option value="2d">2D</option>
+    <option value="3d">3D</option>
+  </select>
+
   <button onclick="draw()">Draw</button>
-  <button onclick="exportImage()">Export Image</button>
-  <p id="shape">Detected Shape: —</p>
-  <div>
-    <label for="historySelect">History:</label>
-    <select id="historySelect" onchange="useHistory()">
-      <option value="">--Select previous equation--</option>
-    </select>
-  </div>
+  <button onclick="voiceDraw()">🎤 Voice</button>
+  <button onclick="toggleFullscreen()">⛶ Maximize</button>
 </header>
 
-<section class="about">
-  <h2>Welcome to My Math Visualizer</h2>
-  <p>
-    This tool lets you visualize 2D and 3D mathematical equations as realistic shapes.<br>
-    Built by <strong>Er Sandip</strong>. Try different equations and see shapes instantly!
-  </p>
-</section>
-
-<div id="container">
-  <div id="graph"></div>
+<!-- 3D VIEW CONTROLS -->
+<div id="controls3d">
+  <label for="camera3d">3D View:</label>
+  <select id="camera3d" onchange="updateCamera()">
+    <option value="iso">Isometric</option>
+    <option value="top">Top</option>
+    <option value="front">Front</option>
+    <option value="back">Back</option>
+    <option value="left">Left</option>
+    <option value="right">Right</option>
+  </select>
 </div>
 
-<footer>
-  &copy; 2026 Er Sandip | All Rights Reserved
-</footer>
+<div id="graph"></div>
+
+<footer>© 2026 Er Sandip</footer>
 
 <script>
-let history = [];
+function safeEval(expr,x,y,z){
+  return Function("x","y","z","with(Math){return "+expr+"}")(x,y,z);
+}
 
-function detectShape(eq, mode) {
-  if (mode === "3d") {
-    if (eq.includes("x*x") && eq.includes("y*y") && eq.includes("z*z"))
-      return "Sphere / Ellipsoid";
-    if (eq.includes("x*x") && eq.includes("y*y") && eq.includes("- z"))
-      return "Paraboloid";
-    if (eq.includes("x*x") && eq.includes("y*y"))
-      return "Cylinder";
+function applyPreset(){
+  if(preset.value === "butterfly"){
+    eq1.value = "Math.sin(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5))";
+    eq2.value = "Math.cos(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5))";
+    eq3.value = "";
+    mode.value = "2d";
   } else {
-    if (eq.includes("x*x") && eq.includes("y*y"))
-      return "Circle / Ellipse";
-    if (eq.includes("x*x") && eq.includes("- y"))
-      return "Parabola";
+    eq1.value = preset.value;
+    eq2.value = "";
+    eq3.value = "";
   }
-  return "Unknown Shape";
 }
 
-function draw() {
-  let eq = document.getElementById("eq").value;
-  let mode = document.getElementById("mode").value;
+function draw(){
+  let eqs=[eq1.value,eq2.value,eq3.value].filter(e=>e.trim());
+  if(eqs.length===0) return alert("Equation likho");
 
-  document.getElementById("shape").innerText =
-    "Detected Shape: " + detectShape(eq, mode);
-
-  if (!history.includes(eq)) {
-    history.push(eq);
-    updateHistory();
+  if(mode.value==="2d"){
+    if(eq1.value.includes("t")) drawButterfly();
+    else draw2D(eqs);
   }
-
-  if (mode === "3d") draw3D(eq);
-  else draw2D(eq);
+  else draw3D(eqs);
 }
 
-function draw3D(eq) {
-  let xs=[], ys=[], zs=[], values=[];
-  for(let x=-6;x<=6;x+=0.4){
-    for(let y=-6;y<=6;y+=0.4){
-      for(let z=-6;z<=6;z+=0.4){
-        let e=eq.replaceAll("x",`(${x})`).replaceAll("y",`(${y})`).replaceAll("z",`(${z})`);
-        try{let v=eval(e); xs.push(x); ys.push(y); zs.push(z); values.push(v);}catch{}
-      }
-    }
+/* -------- 2D FRONT VIEW -------- */
+function draw2D(eqs){
+  let data=[]; let xs=[], ys=[];
+  for(let i=-10;i<=10;i+=0.05) xs.push(i);
+  for(let j=-10;j<=10;j+=0.05) ys.push(j);
+
+  eqs.forEach(eq=>{
+    let Z=[];
+    ys.forEach(y=>{
+      let row=[];
+      xs.forEach(x=>{
+        try{ row.push(safeEval(eq,x,y,0)); }
+        catch{ row.push(null); }
+      });
+      Z.push(row);
+    });
+    data.push({
+      type:"contour", x:xs, y:ys, z:Z,
+      contours:{start:0,end:0,coloring:"lines"},
+      line:{color:"black",width:3}, showscale:false
+    });
+  });
+
+  Plotly.newPlot("graph",data,{
+    paper_bgcolor:"#000",
+    plot_bgcolor:"#fff",
+    xaxis:{color:"black",scaleanchor:"y"},
+    yaxis:{color:"black"}
+  });
+}
+
+/* -------- BUTTERFLY -------- */
+function drawButterfly(){
+  let X=[],Y=[];
+  for(let t=0;t<=12*Math.PI;t+=0.01){
+    let x=Math.sin(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5));
+    let y=Math.cos(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5));
+    X.push(x); Y.push(y);
   }
 
   Plotly.newPlot("graph",[{
-    type:"isosurface",
-    x:xs, y:ys, z:zs, value:values,
-    isomin:-0.4, isomax:0.4, surface:{count:1},
-    colorscale:[[0,'rgb(0,0,255)'],[0.25,'rgb(0,128,255)'],[0.5,'rgb(0,255,0)'],[0.75,'rgb(255,255,0)'],[1,'rgb(255,0,0)']],
-    caps:{x:false,y:false,z:false},
-    showscale:true,
-    lighting:{ambient:0.5,diffuse:0.7,specular:0.5,roughness:0.5,fresnel:0.2}
+    x:X, y:Y, mode:"lines", line:{color:"red",width:3}
   }],{
-    paper_bgcolor:"#0f172a",
-    scene:{
-      xaxis:{color:"white", backgroundcolor:"#1e293b"},
-      yaxis:{color:"white", backgroundcolor:"#1e293b"},
-      zaxis:{color:"white", backgroundcolor:"#1e293b"},
-      bgcolor:"#0f172a",
-      camera:{eye:{x:1.5,y:1.5,z:1.5}},
-      aspectmode:"cube"
+    paper_bgcolor:"#000",
+    plot_bgcolor:"#fff",
+    xaxis:{color:"black",scaleanchor:"y"},
+    yaxis:{color:"black"}
+  });
+}
+
+/* -------- 3D -------- */
+let last3Ddata = [];
+function draw3D(eqs){
+  let data=[]; last3Ddata=[];
+  eqs.forEach(eq=>{
+    let xs=[],ys=[],zs=[],v=[];
+    for(let x=-5;x<=5;x+=0.4)
+    for(let y=-5;y<=5;y+=0.4)
+    for(let z=-5;z<=5;z+=0.4){
+      try{
+        let val=safeEval(eq,x,y,z);
+        xs.push(x); ys.push(y); zs.push(z); v.push(val);
+      }catch{}
     }
+    let surface={type:"isosurface",x:xs,y:ys,z:zs,value:v,isomin:-0.4,isomax:0.4,opacity:0.85,caps:{x:false,y:false,z:false}};
+    data.push(surface);
+  });
+  last3Ddata=data;
+
+  Plotly.newPlot("graph",data,{
+    paper_bgcolor:"#000",
+    scene:{bgcolor:"#fff",xaxis:{color:"black"},yaxis:{color:"black"},zaxis:{color:"black"},dragmode:"orbit"},
+    displayModeBar:true,
+    scrollZoom:true
   });
 }
 
-function draw2D(eq){
-  let x=[],y=[];
-  for(let i=0;i<3000;i++){
-    let a=(Math.random()-0.5)*10;
-    let b=(Math.random()-0.5)*10;
-    let e=eq.replaceAll("x",`(${a})`).replaceAll("y",`(${b})`);
-    try{if(Math.abs(eval(e))<0.3){x.push(a);y.push(b);}}catch{}
+/* -------- UPDATE CAMERA -------- */
+function updateCamera(){
+  if(mode.value!=="3d") return;
+  let view=camera3d.value;
+  let camera;
+  switch(view){
+    case "top": camera={eye:{x:0,y:0,z:2}}; break;
+    case "front": camera={eye:{x:0,y:2,z:0}}; break;
+    case "back": camera={eye:{x:0,y:-2,z:0}}; break;
+    case "left": camera={eye:{x:-2,y:0,z:0}}; break;
+    case "right": camera={eye:{x:2,y:0,z:0}}; break;
+    default: camera={eye:{x:1.25,y:1.25,z:1.25}}; // iso
   }
-  Plotly.newPlot("graph",[{
-    x,y,mode:"markers",type:"scatter",
-    marker:{color:y, colorscale:"Viridis", size:5}
-  }],{
-    paper_bgcolor:"#0f172a",
-    xaxis:{color:"white", gridcolor:"#1e293b"},
-    yaxis:{color:"white", gridcolor:"#1e293b"}
-  });
+  Plotly.relayout(graph,{"scene.camera":camera});
 }
 
-function updateHistory(){
-  let select=document.getElementById("historySelect");
-  select.innerHTML='<option value="">--Select previous equation--</option>';
-  history.forEach(eq=>{
-    let option=document.createElement("option");
-    option.value=eq; option.text=eq;
-    select.appendChild(option);
-  });
+/* -------- FULLSCREEN -------- */
+function toggleFullscreen(){
+  graph.classList.toggle("fullscreen");
+  Plotly.Plots.resize(graph);
 }
 
-function useHistory(){
-  let val=document.getElementById("historySelect").value;
-  if(val!==""){document.getElementById("eq").value=val; draw();}
+/* -------- VOICE COMMAND -------- */
+function voiceDraw(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert("Voice command not supported");
+    return;
+  }
+  let recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.start();
+  recognition.onresult = function(event){
+    let text = event.results[0][0].transcript;
+    eq1.value = text;
+    draw();
+  }
 }
 
-function exportImage(){
-  Plotly.downloadImage("graph",{format:"png",filename:"math-shape"});
-}
+/* ids */
+const eq1=document.getElementById("eq1");
+const eq2=document.getElementById("eq2");
+const eq3=document.getElementById("eq3");
+const mode=document.getElementById("mode");
+const graph=document.getElementById("graph");
+const preset=document.getElementById("preset");
+const camera3d=document.getElementById("camera3d");
 </script>
 
 </body>
