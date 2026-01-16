@@ -2,21 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Realistic Math Shape Visualizer</title>
+<title>Er Sandip's 3D Math Visualizer</title>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', Arial, sans-serif;
   background: #0f172a;
   color: white;
 }
 header {
-  background: #020617;
-  padding: 15px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  padding: 30px;
   text-align: center;
+  border-bottom: 3px solid #1e40af;
+}
+header img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-bottom: 10px;
+}
+header h1 {
+  font-size: 36px;
+  margin-bottom: 5px;
+}
+header p {
+  font-size: 18px;
+  color: #cbd5e1;
+  margin-top:0;
+  margin-bottom:15px;
 }
 input, button, select {
   padding: 8px;
@@ -28,9 +46,12 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
 }
 button:hover {
   background: #1d4ed8;
+  transform: translateY(-2px);
 }
 #container {
   display: flex;
@@ -40,7 +61,10 @@ button:hover {
 #graph {
   width: 90%;
   height: 70vh;
-  margin-top: 10px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  background: #0f172a;
 }
 #historySelect {
   width: 300px;
@@ -51,13 +75,36 @@ button:hover {
   color: white;
   border: none;
 }
+section.about {
+  width:90%;
+  margin:20px auto;
+  text-align:center;
+}
+section.about h2 {
+  font-size:28px;
+  margin-bottom:10px;
+}
+section.about p {
+  font-size:16px;
+  color:#cbd5e1;
+  line-height:1.5;
+}
+footer {
+  text-align:center;
+  padding:15px;
+  margin-top:20px;
+  background:#020617;
+  color:#94a3b8;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h2>Realistic Mathematical Shape Visualizer</h2>
+  <img src="me.png" alt="Er Sandip Logo">
+  <h1>Er Sandip's 3D Math Visualizer</h1>
+  <p>Create 2D & 3D shapes from equations instantly</p>
   <input id="eq" size="34" value="x*x + y*y + z*z - 25">
   <select id="mode">
     <option value="3d">3D</option>
@@ -74,9 +121,21 @@ button:hover {
   </div>
 </header>
 
+<section class="about">
+  <h2>Welcome to My Math Visualizer</h2>
+  <p>
+    This tool lets you visualize 2D and 3D mathematical equations as realistic shapes.<br>
+    Built by <strong>Er Sandip</strong>. Try different equations and see shapes instantly!
+  </p>
+</section>
+
 <div id="container">
   <div id="graph"></div>
 </div>
+
+<footer>
+  &copy; 2026 Er Sandip | All Rights Reserved
+</footer>
 
 <script>
 let history = [];
@@ -120,12 +179,10 @@ function draw3D(eq) {
   for (let x = -6; x <= 6; x += 0.4) {
     for (let y = -6; y <= 6; y += 0.4) {
       for (let z = -6; z <= 6; z += 0.4) {
-
         let e = eq
           .replaceAll("x", `(${x})`)
           .replaceAll("y", `(${y})`)
           .replaceAll("z", `(${z})`);
-
         try {
           let v = eval(e);
           xs.push(x);
@@ -139,21 +196,34 @@ function draw3D(eq) {
 
   Plotly.newPlot("graph", [{
     type: "isosurface",
-    x: xs,
-    y: ys,
-    z: zs,
-    value: values,
-    isomin: -0.4,
-    isomax: 0.4,
-    surface: { count: 1 },
-    colorscale: "Viridis",
-    caps: { x: false, y: false, z: false }
+    x: xs, y: ys, z: zs, value: values,
+    isomin: -0.4, isomax: 0.4,
+    surface: {count:1},
+    colorscale: [
+      [0, 'rgb(0,0,255)'],
+      [0.25,'rgb(0,128,255)'],
+      [0.5,'rgb(0,255,0)'],
+      [0.75,'rgb(255,255,0)'],
+      [1, 'rgb(255,0,0)']
+    ],
+    caps: {x:false, y:false, z:false},
+    showscale:true,
+    lighting: {
+      ambient:0.5,
+      diffuse:0.7,
+      specular:0.5,
+      roughness:0.5,
+      fresnel:0.2
+    }
   }], {
     paper_bgcolor: "#0f172a",
     scene: {
-      xaxis: { color: "white" },
-      yaxis: { color: "white" },
-      zaxis: { color: "white" }
+      xaxis:{color:"white", backgroundcolor:"#1e293b"},
+      yaxis:{color:"white", backgroundcolor:"#1e293b"},
+      zaxis:{color:"white", backgroundcolor:"#1e293b"},
+      bgcolor:"#0f172a",
+      camera: {eye:{x:1.5, y:1.5, z:1.5}},
+      aspectmode:"cube"
     }
   });
 }
@@ -163,24 +233,17 @@ function draw2D(eq) {
   for (let i=0;i<3000;i++) {
     let a=(Math.random()-0.5)*10;
     let b=(Math.random()-0.5)*10;
-
-    let e = eq.replaceAll("x",`(${a})`)
-              .replaceAll("y",`(${b})`);
-    try {
-      if (Math.abs(eval(e))<0.3) {
-        x.push(a); y.push(b);
-      }
-    } catch {}
+    let e = eq.replaceAll("x",`(${a})`).replaceAll("y",`(${b})`);
+    try { if (Math.abs(eval(e))<0.3) { x.push(a); y.push(b); } } catch {}
   }
 
   Plotly.newPlot("graph",[{
-    x,y,
-    mode:"markers",
-    type:"scatter"
+    x,y, mode:"markers", type:"scatter",
+    marker:{color:y, colorscale:"Viridis", size:5}
   }],{
     paper_bgcolor:"#0f172a",
-    xaxis:{color:"white"},
-    yaxis:{color:"white"}
+    xaxis:{color:"white", gridcolor:"#1e293b"},
+    yaxis:{color:"white", gridcolor:"#1e293b"}
   });
 }
 
@@ -197,10 +260,7 @@ function updateHistory() {
 
 function useHistory() {
   let val = document.getElementById("historySelect").value;
-  if(val !== "") {
-    document.getElementById("eq").value = val;
-    draw();
-  }
+  if(val!=="") { document.getElementById("eq").value = val; draw(); }
 }
 
 function exportImage() {
