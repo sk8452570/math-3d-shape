@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Math 2D & 3D Shape Visualizer</title>
+
+  <!-- Libraries -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Math Shape Visualizer (2D + 3D)</h2>
+
+<p>Equation likho (Example: <b>x^2 + y^2 = 25</b> ya <b>x^2 + y^2 + z^2 = 25</b>)</p>
+
+<input id="equation" value="x^2 + y^2 + z^2 = 25">
+
+<br><br>
+
+<select id="mode">
+  <option value="2d">2D Shape</option>
+  <option value="3d">3D Shape</option>
+</select>
+
+<br><br>
+
+<button onclick="draw()">Draw Shape</button>
+<button onclick="exportPNG()">Export Image</button>
+
+<p id="shape"></p>
+
+<h3>History</h3>
+<ul id="history"></ul>
+
+<div id="graph"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
