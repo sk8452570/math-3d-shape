@@ -98,7 +98,7 @@ footer{
     <option value="Math.exp(x)-y">Exponential Curve</option>
     <option value="Math.log(Math.abs(x)+1)-y">Logarithmic Curve</option>
     <option value="">-- Special Curve --</option>
-    <option value="butterfly">Butterfly Curve</option>
+    <option value="butterfly_curve">Butterfly Curve</option>
     <option value="">-- 3D Geometry Surfaces --</option>
     <option value="x*x + y*y + z*z - 25">Sphere</option>
     <option value="x*x + y*y - z">Paraboloid</option>
@@ -147,26 +147,23 @@ function safeEval(expr,x,y,z){
 }
 
 function applyPreset(){
-  if(preset.value === "butterfly"){
-    eq1.value = "Math.sin(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5))";
-    eq2.value = "Math.cos(t)*(Math.exp(Math.cos(t))-2*Math.cos(4*t)-Math.pow(Math.sin(t/12),5))";
-    eq3.value = "";
+  if(preset.value === "butterfly_curve"){
+    eq1.value = ""; eq2.value = ""; eq3.value = "";
     mode.value = "2d";
   } else {
-    eq1.value = preset.value;
-    eq2.value = "";
-    eq3.value = "";
+    eq1.value = preset.value; eq2.value = ""; eq3.value = "";
   }
 }
 
 function draw(){
+  if(preset.value === "butterfly_curve"){
+    drawButterfly(); return;
+  }
+
   let eqs=[eq1.value,eq2.value,eq3.value].filter(e=>e.trim());
   if(eqs.length===0) return alert("Equation likho");
 
-  if(mode.value==="2d"){
-    if(eq1.value.includes("t")) drawButterfly();
-    else draw2D(eqs);
-  }
+  if(mode.value==="2d") draw2D(eqs);
   else draw3D(eqs);
 }
 
