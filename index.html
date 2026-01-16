@@ -37,9 +37,12 @@ header p {
   margin-bottom:15px;
 }
 input, button, select {
+  width: 90%;
+  max-width: 350px;
   padding: 8px;
   font-size: 15px;
-  margin: 5px;
+  margin: 5px auto;
+  display: block;
 }
 button {
   background: #2563eb;
@@ -59,21 +62,26 @@ button:hover {
   align-items: center;
 }
 #graph {
-  width: 90%;
-  height: 70vh;
+  width: 95%;
+  max-width: 1200px;
+  height: 60vh;
   margin-top: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
   background: #0f172a;
 }
 #historySelect {
-  width: 300px;
+  width: 90%;
+  max-width: 300px;
   padding: 5px;
   font-size: 14px;
   margin-top: 5px;
   background: #1e293b;
   color: white;
   border: none;
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
 }
 section.about {
   width:90%;
@@ -96,13 +104,24 @@ footer {
   background:#020617;
   color:#94a3b8;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  header h1 { font-size: 28px; }
+  header p { font-size: 14px; }
+  input, button, select { font-size: 14px; padding: 6px; }
+  #graph { height: 50vh; }
+  section.about h2 { font-size: 22px; }
+  section.about p { font-size: 14px; }
+  header img { width: 80px; height: 80px; }
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <img src="me.png" alt="Er Sandip Logo">
+  <img src="me.png" alt="Er Sandip Logo" onerror="this.style.display='none'">
   <h1>Er Sandip's 3D Math Visualizer</h1>
   <p>Create 2D & 3D shapes from equations instantly</p>
   <input id="eq" size="34" value="x*x + y*y + z*z - 25">
@@ -174,71 +193,47 @@ function draw() {
 }
 
 function draw3D(eq) {
-  let xs = [], ys = [], zs = [], values = [];
-
-  for (let x = -6; x <= 6; x += 0.4) {
-    for (let y = -6; y <= 6; y += 0.4) {
-      for (let z = -6; z <= 6; z += 0.4) {
-        let e = eq
-          .replaceAll("x", `(${x})`)
-          .replaceAll("y", `(${y})`)
-          .replaceAll("z", `(${z})`);
-        try {
-          let v = eval(e);
-          xs.push(x);
-          ys.push(y);
-          zs.push(z);
-          values.push(v);
-        } catch {}
+  let xs=[], ys=[], zs=[], values=[];
+  for(let x=-6;x<=6;x+=0.4){
+    for(let y=-6;y<=6;y+=0.4){
+      for(let z=-6;z<=6;z+=0.4){
+        let e=eq.replaceAll("x",`(${x})`).replaceAll("y",`(${y})`).replaceAll("z",`(${z})`);
+        try{let v=eval(e); xs.push(x); ys.push(y); zs.push(z); values.push(v);}catch{}
       }
     }
   }
 
-  Plotly.newPlot("graph", [{
-    type: "isosurface",
-    x: xs, y: ys, z: zs, value: values,
-    isomin: -0.4, isomax: 0.4,
-    surface: {count:1},
-    colorscale: [
-      [0, 'rgb(0,0,255)'],
-      [0.25,'rgb(0,128,255)'],
-      [0.5,'rgb(0,255,0)'],
-      [0.75,'rgb(255,255,0)'],
-      [1, 'rgb(255,0,0)']
-    ],
-    caps: {x:false, y:false, z:false},
+  Plotly.newPlot("graph",[{
+    type:"isosurface",
+    x:xs, y:ys, z:zs, value:values,
+    isomin:-0.4, isomax:0.4, surface:{count:1},
+    colorscale:[[0,'rgb(0,0,255)'],[0.25,'rgb(0,128,255)'],[0.5,'rgb(0,255,0)'],[0.75,'rgb(255,255,0)'],[1,'rgb(255,0,0)']],
+    caps:{x:false,y:false,z:false},
     showscale:true,
-    lighting: {
-      ambient:0.5,
-      diffuse:0.7,
-      specular:0.5,
-      roughness:0.5,
-      fresnel:0.2
-    }
-  }], {
-    paper_bgcolor: "#0f172a",
-    scene: {
+    lighting:{ambient:0.5,diffuse:0.7,specular:0.5,roughness:0.5,fresnel:0.2}
+  }],{
+    paper_bgcolor:"#0f172a",
+    scene:{
       xaxis:{color:"white", backgroundcolor:"#1e293b"},
       yaxis:{color:"white", backgroundcolor:"#1e293b"},
       zaxis:{color:"white", backgroundcolor:"#1e293b"},
       bgcolor:"#0f172a",
-      camera: {eye:{x:1.5, y:1.5, z:1.5}},
+      camera:{eye:{x:1.5,y:1.5,z:1.5}},
       aspectmode:"cube"
     }
   });
 }
 
-function draw2D(eq) {
-  let x=[], y=[];
-  for (let i=0;i<3000;i++) {
+function draw2D(eq){
+  let x=[],y=[];
+  for(let i=0;i<3000;i++){
     let a=(Math.random()-0.5)*10;
     let b=(Math.random()-0.5)*10;
-    let e = eq.replaceAll("x",`(${a})`).replaceAll("y",`(${b})`);
-    try { if (Math.abs(eval(e))<0.3) { x.push(a); y.push(b); } } catch {}
+    let e=eq.replaceAll("x",`(${a})`).replaceAll("y",`(${b})`);
+    try{if(Math.abs(eval(e))<0.3){x.push(a);y.push(b);}}catch{}
   }
-
   Plotly.newPlot("graph",[{
-    x,y, mode:"markers", type:"scatter",
+    x,y,mode:"markers",type:"scatter",
     marker:{color:y, colorscale:"Viridis", size:5}
   }],{
     paper_bgcolor:"#0f172a",
@@ -247,23 +242,22 @@ function draw2D(eq) {
   });
 }
 
-function updateHistory() {
-  let select = document.getElementById("historySelect");
-  select.innerHTML = '<option value="">--Select previous equation--</option>';
-  history.forEach(eq => {
-    let option = document.createElement("option");
-    option.value = eq;
-    option.text = eq;
+function updateHistory(){
+  let select=document.getElementById("historySelect");
+  select.innerHTML='<option value="">--Select previous equation--</option>';
+  history.forEach(eq=>{
+    let option=document.createElement("option");
+    option.value=eq; option.text=eq;
     select.appendChild(option);
   });
 }
 
-function useHistory() {
-  let val = document.getElementById("historySelect").value;
-  if(val!=="") { document.getElementById("eq").value = val; draw(); }
+function useHistory(){
+  let val=document.getElementById("historySelect").value;
+  if(val!==""){document.getElementById("eq").value=val; draw();}
 }
 
-function exportImage() {
+function exportImage(){
   Plotly.downloadImage("graph",{format:"png",filename:"math-shape"});
 }
 </script>
